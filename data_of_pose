@@ -1,0 +1,19 @@
+# SMPL model
+A human body can be described by two types of prameters: shape parameters and pose paramete.
+- shape parameter (6890,3)
+v_shape = D*beta + T
+T: humam body's meshes (6890,3)
+D: 10 principal deviations (6890,3,10)
+beta: shape model of a particular human subject (10,1)
+- pose parameter 
+v_pose = v_shape + posedir.dot(lrotmin)
+posedir: difference matrix between templete pose and desired pose (6890,23,9)
+lrotmin: the relative rotation values between the current pose and the rest pose(23x9,1)
+# the pipelines:
+our goal is to get the 'posedir' and 'lrotmin'
+first: 'posedir' maybe the label (6890,23,9) -> what's the meaning of numbers within 9?
+second: 'lrotmin' which is the relative rotation values. we can get the R first by pose parameter (24,3,3), and then we get the
+rest parameter I_cube, which is the eye martrix (23,3,3). the we subtract R[1,:] - I_cube to get what we need. 
+so the pipeline is: pose parameter -> R -> R-I_cube -> lrotmin
+
+And finally we get the V_pose = V_shape + posedirs.dot(lrotmin)
